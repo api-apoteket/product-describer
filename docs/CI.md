@@ -1,47 +1,24 @@
-# CI och branchflöde
+# CI och deploy
 
-## Grundmodell
+## CI
 
-Arbete sker på tillfälliga arbetsgrenar och går till `main` via pull request.
+`.github/workflows/ci.yml` producerar `CI / required` för pull requests, merge queue, push till `main` och manuella körningar.
 
-1. Öppna en ready PR till `main`.
-2. Aktivera auto-merge omedelbart.
-3. Required checks `python` och `node` måste bli gröna.
-4. Alla review-kommentarer ska utvärderas och relevanta fynd åtgärdas innan deras trådar löses.
-5. Efter varje ny commit kontrolleras CI och review-status igen.
-6. Squash är enda tillåtna merge-metod i nuvarande live-ruleset.
+Jobbet verifierar Python-koden genom dependency-installation, `compileall` och `pytest`. Därefter verifieras alla tre Cloudflare Workers (`app`, `engine`, `processor`) med `npm ci`, TypeScript-kontroll och Wrangler dry-run. CI kör också testerna för produktionsverifiering och D1-sessioner under `cloudflare/scripts/`.
 
-Repositoryt använder inte merge queue och workflows behöver därför inte `merge_group`.
-
-## Selektiv CI
-
-`.github/scripts/ci-impact.sh` avgör vilka komponentjobb som behöver köras. De required wrapper-jobben `python` och `node` startar alltid och ger ett slutligt resultat även när deras dyra underjobb kan hoppas över.
-
-Routing är konservativ:
-
-- root-Python och `scraper/` påverkar Python-CI
-- `cloudflare/**` påverkar Node/TypeScript-CI
-- dependency- och CI-konfiguration kör berörda delar, vid osäkerhet båda
-- dokumentation/processfiler behöver normalt inte språkbyggen
-- okänd påverkan väljer mer verifiering framför risk för falskt negativt
-
-Node-workers använder respektive `package-lock.json` med `npm ci` och npm-cache. För varje Worker kör CI typkontroll och Wrangler dry-run. Den gemensamma produktionsverifieraren under `cloudflare/scripts/` kör dessutom Node-tester i app-matrisbenet. CI testar verifieringslogik men innehåller ingen produktionsdeploykedja.
+`.github/workflows/dependency-review.yml` kör GitHubs dependency review på pull requests och merge groups och blockerar nya beroenden från severity `high` och uppåt.
 
 ## Docker och säkerhet
 
-Docker-images routas separat från required språk-CI.
+`.github/workflows/docker.yml` bygger images för huvudapplikationen och `scraper`, kör Trivy och laddar SARIF till GitHub Code Scanning. HIGH/CRITICAL-fynd gate:as separat med `exit-code: 1`.
 
-- root-Python, `templates/`, root-`Dockerfile` och `.dockerignore` påverkar `produkter`-imagen
-- relevant kod under `scraper/` påverkar `scraper`-imagen
-- Docker-workflow, Trivy-action och impact-routing verifierar båda images
-- schemalagda och manuella körningar bygger båda images
-- Code Scanning-kategorierna är stabila: `trivy-product-describer` och `trivy-scraper`
+Workflowen körs på pull requests, merge groups, push till `main`, veckoschema och manuellt. Images publiceras endast från `main` vid push eller manuell körning. Aggregatjobbet heter `docker`.
 
-Docker/Trivy, Dependency Review och OSV är kompletterande verifiering men är inte required contexts i nuvarande ruleset. De ska inte skapa konstgjorda wrapper-checkar eller tomma SARIF-resultat för regler som inte finns.
+Code Scanning-kategorierna är `trivy-product-describer` och `trivy-scraper`.
 
 ## Deploy
 
-Cloudflare Workers Builds äger normal produktionsdeploy från `main`; GitHub Actions deployar inte produktion. Varje Worker har en egen Cloudflare production trigger. Production branch är `main`, build command är tomt och non-production branch builds är avstängda för produktions-Workers.
+Cloudflare Workers Builds äger normal produktionsdeploy från `main`; GitHub Actions deployar inte Workers-produktionen.
 
 | Worker | Root directory | Deploy command |
 | --- | --- | --- |
@@ -49,26 +26,16 @@ Cloudflare Workers Builds äger normal produktionsdeploy från `main`; GitHub Ac
 | `produkter-motor` | `cloudflare/engine` | `npm run deploy && npm run verify:production` |
 | `produkter-bearbetare` | `cloudflare/processor` | `npm run deploy` |
 
-`deploy` är i samtliga tre paket direkt `wrangler deploy --strict`. Det finns ingen repo-lokal `deploy:production`-orkestrerare och ingen branch/SHA-logik i deploykod. Production branch, root directory, watch paths och kommandosekvens ägs av Cloudflare Workers Builds; Cloudflare registrerar själv buildens Git-metadata.
+`deploy` är i samtliga tre paket direkt `wrangler deploy --strict`.
 
 Efter deploy verifieras bara ytor som faktiskt finns:
 
 - `produkter`: huvuddomänen måste svara HTTP 200 via `npm run verify:production`.
 - `produkter-motor`: `https://motor.denied.se/health` måste svara HTTP 200 med `{ "ok": true }` via `npm run verify:production`.
-- `produkter-bearbetare`: ingen HTTP-check skapas eftersom Workern är en privat Queue-konsument utan publik route.
+- `produkter-bearbetare`: ingen HTTP-check finns eftersom Workern är en privat Queue-konsument utan publik route.
 
-`cloudflare/scripts/verify-production.mjs` innehåller endast applikationsspecifik HTTP-verifiering. Det scriptet får inte deploya Workers, tolka Workers Builds branch/SHA eller bli en parallell kontrollplan.
+`cloudflare/scripts/verify-production.mjs` innehåller applikationsspecifik HTTP-verifiering.
 
-`wrangler.jsonc` i respektive katalog är source of truth för Worker-namn, bindings, routes och cron-triggers. Build watch paths ska vara:
+`wrangler.jsonc` i respektive katalog är source of truth för Worker-namn, bindings, routes och cron-triggers.
 
-- `produkter`: `cloudflare/app/**`, `cloudflare/shared/**`, `cloudflare/scripts/verify-production.mjs`
-- `produkter-motor`: `cloudflare/engine/**`, `cloudflare/shared/**`, `cloudflare/scripts/verify-production.mjs`
-- `produkter-bearbetare`: `cloudflare/processor/**`, `cloudflare/shared/**`
-
-D1-databasen `produkter` delas av flera Workers och repositoryt har i nuläget ingen Wrangler `migrations/`-kedja, endast versionshanterade SQL-filer under `cloudflare/infra/`. Därför ska de tre separata Workers Builds **inte** automatiskt applicera D1-schema vid deploy. Schemaändringar ska hanteras separat tills en entydig migrationsägare och idempotent migrationskedja införs.
-
-Secrets sätts utanför repositoryt och får inte committas. Ändra inte Worker-secrets eller bindings som en del av CI-städning utan uttryckligt behov och efter verifiering av runtime-konfigurationen.
-
-## Princip
-
-Live-ruleset är sanningskällan för merge-gates. CI ska vara så liten som möjligt utan att tappa relevant verifiering; vid osäker påverkan ska den hellre köra mer än missa ett test.
+D1-databasen `produkter` delas av flera Workers. Repositoryt har ingen Wrangler `migrations/`-kedja; versionshanterade SQL-filer ligger under `cloudflare/infra/`. Schemaändringar hanteras därför separat från de tre Workers Builds.
