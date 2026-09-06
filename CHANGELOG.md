@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/Avkroken/Produkter/compare/v1.4.2...v1.4.3) (2026-09-06)
+
+
+### Documentation
+
+* förenkla REPO.md på svenska ([#654](https://github.com/Avkroken/Produkter/issues/654)) ([5d2d92e](https://github.com/Avkroken/Produkter/commit/5d2d92e49809703840c94b33eae1b61956c9bd5d))
+
 ## [1.4.2](https://github.com/Avkroken/Produkter/compare/v1.4.1...v1.4.2) (2026-09-05)
 
 
