@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.4](https://github.com/Avkroken/Produkter/compare/v1.4.3...v1.4.4) (2026-09-06)
+
+
+### Documentation
+
+* align CI documentation with current workflows ([5ee4d04](https://github.com/Avkroken/Produkter/commit/5ee4d04629d9e9b1c7e8b872c002fea4311bea41))
+* skriv om CI-dokumentationen mot faktisk workflowkod ([#660](https://github.com/Avkroken/Produkter/issues/660)) ([5ee4d04](https://github.com/Avkroken/Produkter/commit/5ee4d04629d9e9b1c7e8b872c002fea4311bea41))
+
 ## [1.4.3](https://github.com/Avkroken/Produkter/compare/v1.4.2...v1.4.3) (2026-09-06)
 
 
