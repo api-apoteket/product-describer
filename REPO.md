@@ -12,6 +12,14 @@
 - Scraper-credentials ska hållas utanför images och förrådsfiler. Felrapportering ska fortsätta redigera känslig information.
 - Ändra inte shell error flags globalt för stil; använd flaggor som stöds av den deklarerade runtime-shellen.
 
+## GitHub-styrning
+
+- Kanonisk arbets- och reviewpolicy finns i `Avkroken/.github/AGENTS.md`.
+- `main` skyddas av det ärvda organisationsrulesetet `main` och repo-rulesetet `required-ci`.
+- Required checks på `main` är `CI / required`, `docker` och `dependency-review`.
+- `dev` är integrationsgren när ett aktivt `dev-pilot`-ruleset finns. Nuvarande `CI / required`-workflow triggar PR mot `main`, inte `dev`; konfigurera därför inte den checken som required på `dev` innan workflowet uttryckligen stöder `dev`.
+- Organisationens CodeRabbit-UI är baslinje. Repository-lokal `.coderabbit.yaml` ska endast användas för uttryckligen repo-specifika overrides.
+
 ## Validering
 
 Kör relevanta Python-tester samt Worker type-check/tests och Wrangler dry-run för berörda paket. Validera Docker-image och säkerhetsskanning när containerbeteende ändras.
