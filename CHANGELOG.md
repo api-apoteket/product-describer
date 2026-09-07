@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.5](https://github.com/Avkroken/Produkter/compare/v1.4.4...v1.4.5) (2026-09-07)
+
+
+### Documentation
+
+* document repository governance ([a7b95ba](https://github.com/Avkroken/Produkter/commit/a7b95ba4d28c6fba514c6463aa9d9e8c3b3f0b70))
+* dokumentera repository-styrning ([#667](https://github.com/Avkroken/Produkter/issues/667)) ([a7b95ba](https://github.com/Avkroken/Produkter/commit/a7b95ba4d28c6fba514c6463aa9d9e8c3b3f0b70))
+
 ## [1.4.4](https://github.com/Avkroken/Produkter/compare/v1.4.3...v1.4.4) (2026-09-06)
 
 
