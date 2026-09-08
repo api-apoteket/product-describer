@@ -1,6 +1,5 @@
 # produkter
 
-[![CI](https://github.com/Avkroken/produkter/actions/workflows/ci.yml/badge.svg)](https://github.com/Avkroken/produkter/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Avkroken/produkter)](https://github.com/Avkroken/produkter/releases)
 [![Image](https://ghcr-badge.egpl.dev/avkroken/produkter/size?color=blue&label=image)](https://github.com/Avkroken/produkter/pkgs/container/produkter)
 [![License](https://img.shields.io/github/license/Avkroken/produkter)](LICENSE)
