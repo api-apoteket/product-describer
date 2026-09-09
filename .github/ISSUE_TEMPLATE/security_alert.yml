@@ -1,0 +1,36 @@
+name: Security alert remediation
+description: Track remediation of an existing GitHub security alert without disclosing a new vulnerability
+title: "[Security alert]: "
+labels: [triage:pending]
+body:
+  - type: markdown
+    attributes:
+      value: This public form accepts only public GHSA or CVE advisories. Report repository CodeQL, Dependabot, secret-scanning, or otherwise non-public alerts privately through the Security tab without mentioning them in a public issue.
+  - type: input
+    id: alert
+    attributes:
+      label: Public GHSA or CVE identifier
+      description: Enter only a public GHSA-xxxx-xxxx-xxxx or CVE-yyyy-nnnn identifier. Do not enter repository alert URLs or numbers.
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Vulnerability severity
+      options: [Low, Moderate, High, Critical]
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Exploitation risk
+      options: [Low, Medium, High, Critical, Unknown]
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Estimated difficulty to fix
+      options: [Small, Medium, Large, Unknown]
+    validations:
+      required: true
