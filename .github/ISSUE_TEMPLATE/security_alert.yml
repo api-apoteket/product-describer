@@ -1,0 +1,40 @@
+name: Security alert remediation
+description: Track remediation of an existing GitHub security alert without disclosing a new vulnerability
+title: "[Security alert]: "
+labels: [triage:pending]
+body:
+  - type: markdown
+    attributes:
+      value: Use this only for an existing GitHub alert. Report undisclosed vulnerabilities privately through the Security tab.
+  - type: input
+    id: alert
+    attributes:
+      label: Alert URL or number
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Vulnerability severity
+      options: [Low, Moderate, High, Critical]
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Exploitation risk
+      options: [Low, Medium, High, Critical, Unknown]
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Estimated difficulty to fix
+      options: [Small, Medium, Large, Unknown]
+    validations:
+      required: true
+  - type: textarea
+    id: remediation
+    attributes:
+      label: Remediation notes
+      description: Do not include exploit details, credentials, or other sensitive information.

@@ -1,0 +1,28 @@
+{
+  "name": "required-checks",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": ["~DEFAULT_BRANCH"]
+    }
+  },
+  "rules": [
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "do_not_enforce_on_create": true,
+        "required_status_checks": [
+          {"context": "CI / Python"},
+          {"context": "CI / Workers"},
+          {"context": "CodeQL Advanced / Analyze (javascript-typescript)"},
+          {"context": "CodeQL Advanced / Analyze (python)"},
+          {"context": "Dependency review / dependency-review"}
+        ],
+        "strict_required_status_checks_policy": true
+      }
+    }
+  ],
+  "bypass_actors": []
+}

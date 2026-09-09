@@ -1,0 +1,41 @@
+name: Bug report
+description: Report reproducible incorrect behavior
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a bug. Do not include secrets or security vulnerabilities.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the actual and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      placeholder: "1. …\n2. …\n3. …"
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk if left unfixed
+      options: [Low, Medium, High, Critical]
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Estimated difficulty to fix
+      options: [Small, Medium, Large, Unknown]
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Version, browser, operating system, or deployment context.
