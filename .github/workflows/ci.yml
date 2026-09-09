@@ -62,3 +62,4 @@ jobs:
           done
           node cloudflare/scripts/verify-production.test.mjs
           node cloudflare/scripts/d1-session.test.mjs
+          (cd cloudflare/engine && npx tsx --test ../shared/providers.test.ts)

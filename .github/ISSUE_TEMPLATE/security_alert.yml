@@ -5,11 +5,12 @@ labels: [triage:pending]
 body:
   - type: markdown
     attributes:
-      value: Use this only for an existing GitHub alert. Report undisclosed vulnerabilities privately through the Security tab.
+      value: This public form accepts only public GHSA or CVE advisories. Report repository CodeQL, Dependabot, secret-scanning, or otherwise non-public alerts privately through the Security tab without mentioning them in a public issue.
   - type: input
     id: alert
     attributes:
-      label: Alert URL or number
+      label: Public GHSA or CVE identifier
+      description: Enter only a public GHSA-xxxx-xxxx-xxxx or CVE-yyyy-nnnn identifier. Do not enter repository alert URLs or numbers.
     validations:
       required: true
   - type: dropdown
@@ -33,8 +34,3 @@ body:
       options: [Small, Medium, Large, Unknown]
     validations:
       required: true
-  - type: textarea
-    id: remediation
-    attributes:
-      label: Remediation notes
-      description: Do not include exploit details, credentials, or other sensitive information.
